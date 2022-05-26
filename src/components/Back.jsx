@@ -68,6 +68,14 @@ function Back() {
 
   },[deleteId])
 
+  const deleteComment = id => {
+    axios.delete('http://localhost:3003/trees-delete-comment/' + id, )
+    .then(res => {
+      console.log(res);
+      setLastUpdate(Date.now());
+    });
+  }
+
 
   return (
     <>
@@ -84,7 +92,7 @@ function Back() {
             <div className="card-body">
               <ul className="list-group">
                 {
-                  trees.map(t => <TreeLine key={t.id} tree={t} setDeleteId={setDeleteId} setModalData={setModalData}></TreeLine>)
+                  trees.map(t => <TreeLine key={t.id} tree={t} setDeleteId={setDeleteId} setModalData={setModalData} deleteComment={deleteComment}></TreeLine>)
                 }
               </ul>
             </div>

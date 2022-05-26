@@ -1,21 +1,40 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import getBase64 from "../Functions/getBase64";
 
 function Create({setCreateData}) {
 
     const [title, setTitle] = useState('');
     const [height, setHeight] = useState('');
     const [type, setType] = useState('1');
+    const fileInput = useRef();
 
     const buttonHandler = () => {
-        setCreateData({
-            title,
-            height,
-            type
-        });
+        const file = fileInput.current.files[0];
+
+        if (file) {
+            getBase64(file)
+            .then(photo => {
+                console.log(photo);
+                setCreateData({
+                    title,
+                    height,
+                    type,
+                    photo
+                });
+            });
+        } else {
+            setCreateData({
+                title,
+                height,
+                type,
+                photo: ''
+            });
+        }
         setTitle('');
         setHeight('');
         setType(1);
     }
+
 
     const inputHandler = (e, which) => {
         switch(which) {
@@ -61,6 +80,13 @@ function Create({setCreateData}) {
                                     <option value="3">Palm</option>
                                 </select>
                                 <small className="form-text text-muted">Tree type.</small>
+                            </div>
+                        </div>
+                        <div className="col-12">
+                            <div className="form-group">
+                                <label>Photo</label>
+                                <input ref={fileInput} type="file" className="form-control" />
+                                <small className="form-text text-muted">Tree photo.</small>
                             </div>
                         </div>
                         <div className="buttons">

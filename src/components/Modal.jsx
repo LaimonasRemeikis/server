@@ -1,20 +1,44 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import getBase64 from "../Functions/getBase64";
 function Modal({setModalData, modalData, setEditData}) {
 
     const [title, setTitle] = useState('');
     const [height, setHeight] = useState('');
     const [type, setType] = useState('1');
     const [id, setId] = useState('0');
+    const [remove, setRemove] = useState(false);
+    const fileInput = useRef();
 
     const buttonHandler = () => {
+        const file = fileInput.current.files[0];
+    if (file) {
+        getBase64(file)
+            .then(photo => {
+                console.log(photo);
+                setEditData({
+                    title,
+                    height,
+                    type,
+                    id,
+                    photo,
+                    del: remove ? 1 : 0
+                });
+                setModalData(null);
+                setRemove(false);
+            });
+    } else {
         setEditData({
             title,
             height,
             type,
-            id
+            id,
+            photo: null,
+            del: remove ? 1 : 0
         });
         setModalData(null);
+        setRemove(false);
     }
+}
 
     const inputHandler = (e, which) => {
         switch(which) {
@@ -85,7 +109,22 @@ function Modal({setModalData, modalData, setEditData}) {
                                             <small className="form-text text-muted">Tree type.</small>
                                         </div>
                                     </div>
-
+                                    <div className="col-12">
+                            <div className="form-group">
+                                <label>Photo</label>
+                                <input ref={fileInput} type="file" className="form-control" />
+                                <small className="form-text text-muted">Tree photo.</small>
+                            </div>
+                        </div>
+                        <div className="col-2">
+                                        <div className="form-group form-check">
+                                            <input type="checkbox" className="form-check-input" onChange={() => setRemove(r => !r)}  checked={remove} />
+                                                <label className="form-check-label">Delete Photo</label>
+                                        </div>
+                                    </div>
+                                    <div className="col-10">
+                                        {modalData.photo ? <img className="photo" src={modalData.photo}></img> : null}
+                                    </div>
                                 </div>
                             </div>
                         </div>

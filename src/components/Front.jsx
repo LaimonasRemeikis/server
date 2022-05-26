@@ -14,7 +14,7 @@ function Front({show}) {
     const [lastUpdate, setLastUpdate] = useState(Date.now());// state
     const [trees, dispachTrees] = useReducer(reducer, [])
     const[search, setSearch]= useState ('');
-    const [com, setCom] = useState([])
+    // const [com, setCom] = useState([])
 
 
     // Read
@@ -22,20 +22,20 @@ function Front({show}) {
         axios.get('http://localhost:3003/trees-list/' + show)
             .then(res => {
                 console.log(res.data);
-                const t = new Map(); //medziai
-                const c = new Map(); //komentarai
-                res.data.forEach(o => {
-                    t.set(o.id, o);
-                    if (null !== o.cid) {
-                        c.set(o.cid, o);
-                    }
-                });
-                const ar = [];
-                t.forEach(o => ar.push(o));
-                const ar2 = [];
-                c.forEach(o => ar2.push(o));
-                setCom(ar2);
-                dispachTrees(getDataFromServer(ar));
+                // const t = new Map(); //medziai
+                // const c = new Map(); //komentarai
+                // res.data.forEach(o => {
+                //     t.set(o.id, o);
+                //     if (null !== o.cid) {
+                //         c.set(o.cid, o);
+                //     }
+                // });
+                // const ar = [];
+                // t.forEach(o => ar.push(o));
+                // const ar2 = [];
+                // c.forEach(o => ar2.push(o));
+                // setCom(ar2);
+                dispachTrees(getDataFromServer(res.data));
             })
     }, [show, lastUpdate]);
 
@@ -57,7 +57,13 @@ function Front({show}) {
 }
 
 const saveVote = (id, value) => {
-    axios.put('http://localhost:3003/trees-vote/' + id, {vote: value})
+    axios.post('http://localhost:3003/trees-vote/' + id, {vote: value})
+    .then(res => {
+        setLastUpdate(Date.now());
+    });
+}
+const saveComment = (id, value) => {
+    axios.post('http://localhost:3003/trees-comment/' + id, {comment: value})
     .then(res => {
         setLastUpdate(Date.now());
     });
@@ -90,7 +96,7 @@ return (
                 <div className="col-12">
                     <ul className="list-group">
                         {
-                            trees.map(t => <TreeLine key={t.id} tree={t} saveVote={saveVote} com={com}></TreeLine>)
+                            trees.map(t => <TreeLine key={t.id} tree={t} saveVote={saveVote} saveComment={saveComment} ></TreeLine>)
                         }
                     </ul>
                 </div>
